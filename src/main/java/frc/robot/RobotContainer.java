@@ -14,19 +14,18 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.commands.DriveCommands;
-import frc.robot.commands.Handoff;
-import frc.robot.commands.MoveArm;
+import frc.robot.commands.GoHome;
 import frc.robot.commands.PickUpCoral;
-import frc.robot.commands.PlaceHeight;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Center;
@@ -103,25 +102,26 @@ public class RobotContainer {
                 new ModuleIO() {});
         break;
     }
-
+    registerNamedCommands();
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up SysId routines
-    autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
-    autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-    autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Forward)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Quasistatic Reverse)",
+    //     drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+    // autoChooser.addOption(
+    //     "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+    autoChooser.addDefaultOption("L1Auto", AutoBuilder.buildAuto("L1Auto"));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -167,35 +167,48 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // pivot controls
-    controller.y().toggleOnTrue(new PickUpCoral());
-    controller.rightBumper().onTrue(m_pivot.setPosition(Pivot.inPosition));
-    // controller.y().onFalse(m_pivot.setPosition(Pivot.inPosition));piv
-    controller.rightBumper().onChange(m_intake.runVoltageCommand(4));
+    controller.y().onTrue(new PickUpCoral());
+
+    // To Move Elevator and ARM
+    // controller
+    //     .povLeft()
+    //     .onTrue(
+    //         new Handoff()
+    //             .andThen(new PlaceHeight(Elevator.level4Position, Arm.l4Pos, Pivot.outTheWay)))
+    //     .onFalse(m_elevator.stopMotor());
+    // controller.a().onTrue(new PlaceGamePiece(Arm.placel4));
+
+    // controller
+    //     .povRight()
+    //     .onTrue(
+    //         new Handoff()
+    //             .andThen(new PlaceHeight(Elevator.level2Position, Arm.l2Pos, Pivot.outTheWay)))
+    //     .onFalse(m_elevator.stopMotor());
+    // controller
+    //     .povUp()
+    //     .onTrue(
+    //         new Handoff()
+    //             .andThen(new PlaceHeight(Elevator.level3Position, Arm.l3Pos, Pivot.outTheWay)))
+    //     .onFalse(m_elevator.stopMotor());
+
+    controller.rightBumper().onTrue(m_pivot.setPos(6));
+    // .onFalse(m_pivot.stopMotor());
+    // controller.rightBumper().onTrue(m_intake.runVoltageCommand(4)).onFalse(m_intake.stopMotor());
+
     // intake rollers out
-    controller.x().onTrue(m_intake.runVoltageCommand(-5));
-    controller.x().onFalse(m_intake.stopMotor());
-
+    controller.x().onTrue(m_intake.runVoltageCommand(-5)).onFalse(m_intake.stopMotor());
     controller.rightStick().onTrue(m_pivot.setPosition(Pivot.levelOnePosition));
+    // controller.rightStick().onTrue(m_intake.stopMotor());
 
-    controller.rightStick().onTrue(m_intake.stopMotor());
+    controller.leftBumper().onTrue(new GoHome());
 
-    controller.povLeft().onTrue(new PlaceHeight(Elevator.level4Position, Arm.l4Pos));
-    controller.povRight().onTrue(new PlaceHeight(Elevator.level2Position, Arm.l2Pos));
-    controller.povUp().onTrue(new PlaceHeight(Elevator.level3Position, Arm.l2Pos));
+    // controller.b().onTrue(new PlaceGamePiece(Arm.placel4));
 
-    controller.povRight().onFalse(m_elevator.stopMotor());
-    controller.povUp().onFalse(m_elevator.stopMotor());
-    controller.povLeft().onFalse(m_elevator.stopMotor());
+    // controller.rightTrigger().onTrue(new PlaceGamePiece(Arm.placel2).andThen(new GoHome()));
+    // controller.leftTrigger().onTrue(new PlaceGamePiece(Arm.placel3).andThen(new GoHome()));
 
-    // controller.a().onTrue(m_claw.runVoltageCommand(-5));
-
-    // controller.a().onFalse(m_claw.stopMotor());
-    controller.b().onTrue(m_claw.runVoltageCommand(5));
-    controller.b().onFalse(m_claw.stopMotor());
-
-    controller.leftBumper().onTrue(new MoveArm(0, 0));
-
-    controller.a().onTrue(new Handoff());
+    // controller.a().onTrue(new Handoff());
+    SmartDashboard.putData("GoHome", new GoHome());
 
     controller.button(7).onTrue(m_arm.resetPositionZero());
   }
@@ -207,5 +220,12 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+  }
+
+  public void registerNamedCommands() {
+    NamedCommands.registerCommand("Eject Piece", m_intake.runVoltageCommand(-5.0));
+    NamedCommands.registerCommand("Stop Ejecting", m_intake.runVoltageCommand(0.0));
+    NamedCommands.registerCommand("Pivot", m_pivot.setPosition(Pivot.levelOnePosition));
+    NamedCommands.registerCommand("UnPivot", m_pivot.setPosition(6.0));
   }
 }

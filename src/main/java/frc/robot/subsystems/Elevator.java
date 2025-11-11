@@ -18,11 +18,11 @@ public class Elevator extends SubsystemBase {
   private TalonFX leftMotor = new TalonFX(15, "DriveBus");
   private TalonFX rightMotor = new TalonFX(16, "DriveBus");
 
-  public static final double level2Position = -.85;
-  public static final double level3Position = -3.05;
-  public static final double level4Position = -5.75;
-  public static final double intakePickUpPos = -5.09808; // -32.68
-  public static final double restPos = -3.7;
+  public static final double level2Position = -.689288; // -4.498047 rotations
+  public static final double level3Position = -2.49564; // -16.285645 rotations
+  public static final double level4Position = -6.5;
+  public static final double intakePickUpPos = -5;
+  public static final double restPos = -6;
   public static final double MAX_HEIGHT = -6.708;
 
   MotionMagicVoltage motionMagicControls;
@@ -80,7 +80,7 @@ public class Elevator extends SubsystemBase {
     leftMotor.setPosition(0);
     rightMotor.setPosition(0);
 
-    rightMotor.setControl(new Follower(leftMotor.getDeviceID(), false));
+    rightMotor.setControl(new Follower(leftMotor.getDeviceID(), true));
   }
 
   public Command setPosition(double position) {
@@ -154,6 +154,7 @@ public class Elevator extends SubsystemBase {
   private void runMotorToPosition(double target) { // 5.55
     leftMotor.setControl(motionMagicControls.withPosition(target * (50.0 / 13) * (50.9 / 30)));
     // rightMotor.setControl(motionMagicControls.withPosition(target * (50.0 / 13) * (50.0 / 30)));
+    // -31.717773
   }
 
   public boolean isAtSetpoint() {

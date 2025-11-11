@@ -17,14 +17,20 @@ public class Arm extends SubsystemBase {
 
   private TalonFX leftMotor = new TalonFX(13, "DriveBus");
 
-  public static final double l2Pos = -129;
-  public static final double l4Pos = -150;
-  public static final double pickUpPos = -176.989091; // needs to be -30.42
+  public static final double l4Pos = -45;
+  public static final double placel4 = -66.90;
+  public static final double l3Pos = -49.5170327; // -8.510742 rotation;
+  public static final double l2Pos = -45.8607942; // -7.882324 rotations
+  public static final double placel3 = -55;
+  public static final double placel2 = -55;
+  public static final double pickUpPos = -179.989091; // needs to be -30.42  //-30.989746
+
+  public static final double home = 0;
 
   private final double forwardSoftLimit = 90; // max angle in degrees
   private final double reverseSoftLimit = -90; // min angle in degrees
   //   public static final double de
-  //     public static final double
+  //     public static final double  -31.717773
   MotionMagicVoltage motionMagicControls;
 
   VoltageOut voltageControl;

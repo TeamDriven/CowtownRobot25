@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import static frc.robot.RobotContainer.m_pivot;
+
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -10,6 +12,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import java.util.function.DoubleSupplier;
@@ -18,9 +21,13 @@ public class Pivot extends SubsystemBase {
   private TalonFX pivotMotor = new TalonFX(14, "DriveBus");
 
   public static final double outPosition = -136;
-  public static final double inPosition = 5.118; // .853
+  public static final double inPosition = 6; // 1.179688
 
   public static final double levelOnePosition = -50;
+  public static final double outTheWay = -65;
+
+  public static final double levelTwoPosition = -28.658202;
+  // -4.776367 rotations	for l2
 
   MotionMagicVoltage motionMagicControls;
 
@@ -69,8 +76,15 @@ public class Pivot extends SubsystemBase {
     pivotMotor.setPosition(0);
   }
 
+  public Command setPos(double position) {
+    Command cmd = new InstantCommand(() -> runMotorToPosition(position));
+    cmd.addRequirements(m_pivot);
+    return cmd;
+  }
+
   public Command setPosition(double position) {
     return new Command() {
+
       @Override
       public void execute() {
         runMotorToPosition(position);

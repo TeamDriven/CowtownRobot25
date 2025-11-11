@@ -80,7 +80,7 @@ public class Intake extends SubsystemBase {
     };
   }
 
-  private void runVoltage(double volts) {
+  public void runVoltage(double volts) {
     intakeMotor.setVoltage(volts);
   }
 

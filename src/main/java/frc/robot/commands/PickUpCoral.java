@@ -17,8 +17,11 @@ public class PickUpCoral extends SequentialCommandGroup {
         m_pivot.setPosition(Pivot.outPosition),
         m_intake.runVoltageCommand(7),
         new WaitUntilCommand(() -> m_sensor.getSensor()),
-        m_pivot.setPosition(Pivot.inPosition),
+        m_pivot.setPosition(0),
+        new WaitUntilCommand(() -> m_pivot.isAtSetpoint()),
         new WaitCommand(0.5),
-        m_intake.runVoltageCommand(5));
+        m_intake.runVoltageCommand(5),
+        new WaitCommand(.75),
+        m_intake.runVoltageCommand(0));
   }
 }

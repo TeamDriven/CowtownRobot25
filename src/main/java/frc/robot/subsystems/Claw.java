@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -79,6 +80,10 @@ public class Claw extends SubsystemBase {
     };
   }
 
+  public double getVelo() {
+    return clawMotor.getVelocity().getValueAsDouble();
+  }
+
   private void runVoltage(double volts) {
     clawMotor.setVoltage(volts);
   }
@@ -89,13 +94,14 @@ public class Claw extends SubsystemBase {
 
   public double getCurrents() {
     return clawMotor.getStatorCurrent().getValueAsDouble();
-    // return clawMotor.getCurr
   }
 
   public boolean hasGamePiece() {
-    return getCurrents() >= 20;
+    return getVelo() >= -29.5;
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    SmartDashboard.putNumber("Claw Velo", getVelo());
+  }
 }
